@@ -8,7 +8,7 @@ This runs a local blockchain that you can test and run your solidity contracts o
 When **Ganache** is running in the background.
 Run `truffle migrate` to migrate the smart contracts onto your local blockchain.
 
-To run the python scripts:
+To get setup for the python scripts:
 ```
     cd api
     brew install pyenv
@@ -17,6 +17,10 @@ To run the python scripts:
     pyenv virtualenv 3.7.6 mytoken
     pyenv local mytoken
     pip install web3
+```
+Then you can run the script like this:
+```
+python run.py <earn|burn|balance> <address>
 ```
 
 ## Notes and Tips

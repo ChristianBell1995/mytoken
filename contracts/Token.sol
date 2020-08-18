@@ -14,7 +14,8 @@ contract Token {
     // Events allow for logging of activity on the blockchain.
     // Ethereum clients can listen for events in order to react to contract state changes.
     // Learn more: https://solidity.readthedocs.io/en/v0.5.10/contracts.html#events
-    event Transfer(address from, address to, uint amount);
+    event Burn(address from, address to, uint amount);
+    event Earn(address from, address to, uint amount);
 
     // Initializes the contract's data, setting the `owner`
     // to the address of the contract creator.
@@ -41,6 +42,8 @@ contract Token {
 
         // Increases the balance of `receiver` by `amount`
         balances[receiver] += amount;
+
+        emit Earn(msg.sender, receiver, amount);
     }
 
     // Sends an amount of existing tokens from any caller to an address.
@@ -53,6 +56,6 @@ contract Token {
         balances[receiver] += amount;
 
         // Emits the event defined earlier
-        emit Transfer(msg.sender, receiver, amount);
+        emit Burn(msg.sender, receiver, amount);
     }
 }
