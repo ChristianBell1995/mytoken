@@ -14,8 +14,8 @@ contract Token {
     // Events allow for logging of activity on the blockchain.
     // Ethereum clients can listen for events in order to react to contract state changes.
     // Learn more: https://solidity.readthedocs.io/en/v0.5.10/contracts.html#events
-    event Burn(address from, address to, uint amount);
-    event Earn(address from, address to, uint amount);
+    event Burn(address user, uint amount);
+    event Earn(address user, uint amount);
 
     // Initializes the contract's data, setting the `owner`
     // to the address of the contract creator.
@@ -28,7 +28,7 @@ contract Token {
     }
 
     // Creates an amount of new tokens and sends them to an address.
-    function earn(address receiver, uint amount) public {
+    function earn(address user, uint amount) public {
         // `require` is a control structure used to enforce certain conditions.
         // If a `require` statement evaluates to `false`, an exception is triggered,
         // which reverts all changes made to the state during the current call.
@@ -40,22 +40,23 @@ contract Token {
         // Ensures a maximum amount of tokens
         require(amount < 1e60, "Maximum issuance succeeded");
 
-        // Increases the balance of `receiver` by `amount`
-        balances[receiver] += amount;
+        // Increases the balance of `user` by `amount`
+        balances[user] += amount;
 
-        emit Earn(msg.sender, receiver, amount);
+        emit Earn(user, amount);
     }
 
     // Sends an amount of existing tokens from any caller to an address.
-    function burn(address receiver, uint amount) public {
+    function burn(address user, uint amount) public {
         // The sender must have enough tokens to send
-        require(amount <= balances[msg.sender], "Insufficient balance.");
+        require(msg.sender == owner, "You are not the owner.");
+
+        require(amount <= balances[user], "Insufficient balance.");
 
         // Adjusts token balances of the two addresses
-        balances[msg.sender] -= amount;
-        balances[receiver] += amount;
+        balances[user] -= amount;
 
         // Emits the event defined earlier
-        emit Burn(msg.sender, receiver, amount);
+        emit Burn(user, amount);
     }
 }

@@ -2,9 +2,10 @@ import json
 import sys
 from web3 import Web3, HTTPProvider
 
+CONTRACT_OWNER_PRIVATE_KEY = ""
+
 def __setup_contract():
-    TOKEN_CONTRACT_ADDRESS = "0x03978B294209dFEa2E41Be5F99ec67bc4CE03fd3"
-    CONTRACT_OWNER_ADDRESS = "0x811ec12357C81397DD48822335a9239C3005c3F9"
+    TOKEN_CONTRACT_ADDRESS = ""
     # compile your smart contract with truffle first
     truffleFile = json.load(open('./contracts/Token.json'))
     abi = truffleFile['abi']
@@ -12,7 +13,7 @@ def __setup_contract():
 
     # Connect web3 to Ganache
     w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:7545'))
-    print(w3.isConnected())
+    print(f'Are we connected to the blockchain??? {w3.isConnected()}')
     # Get address of your contract i.e. the Token contract
     contract_address = Web3.toChecksumAddress(TOKEN_CONTRACT_ADDRESS)  # modify
 
@@ -20,53 +21,69 @@ def __setup_contract():
     # Contract instance in concise mode
     return w3.eth.contract(abi=abi, address=contract_address), w3
 
-def __earn():
+def __register():
     contract_instance, w3 = __setup_contract()
-    # The first time earning it may be a new user so we might want to create an account for them although this might happen in another method
-    new_account = w3.eth.account.create()
+
+    account = w3.eth.account.create()
+    # Rather than printing out here we will write to Firebase with the address and to some KMS equivalent with the private key
     print("Address:")
-    print(new_account.address)
+    print(account.address)
     print('Private Key:')
-    print(new_account.privateKey.hex())
+    print(account.privateKey.hex())
 
 
+def __earn(user_address, amount):
+    contract_instance, w3 = __setup_contract()
     # Take the private key of the owner of the contract in order to earn points.
-    CONTRACT_OWNER_PRIVATE_KEY = "fe4c8c9f704a0b1b55904aeaafeb07a09f100bdd877597b71cf71942f4f90a9f"
-    private_key = CONTRACT_OWNER_PRIVATE_KEY  # modify
-    acct = w3.eth.account.privateKeyToAccount(private_key)
-    account_address = acct.address
+    acct = w3.eth.account.privateKeyToAccount(CONTRACT_OWNER_PRIVATE_KEY)
+    owner_address = acct.address
 
-    # To get owner of the contract:
-    # contract_instance.functions.owner().call()
-
-    tx = contract_instance.functions.earn(new_account.address, 1).buildTransaction(
-        {'nonce': w3.eth.getTransactionCount(account_address)})
+    tx = contract_instance.functions.earn(user_address, int(amount)).buildTransaction(
+        {'nonce': w3.eth.getTransactionCount(owner_address)})
     # Get tx receipt to get contract address
-    signed_tx = w3.eth.account.signTransaction(tx, private_key)
+    signed_tx = w3.eth.account.signTransaction(tx, CONTRACT_OWNER_PRIVATE_KEY)
     tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
     tx_receipt = w3.eth.getTransactionReceipt(tx_hash)
+    event = contract_instance.events.Earn().processReceipt(tx_receipt)
     print('Transaction Receipt:')
     print(tx_receipt)
+    print('Event:')
+    print(event)
 
-    print(tx_hash.hex())
 
-def __burn():
+def __burn(user_address, amount):
     contract_instance, w3 = __setup_contract()
+    # Take the private key of the owner of the contract in order to burn points.
+    acct = w3.eth.account.privateKeyToAccount(CONTRACT_OWNER_PRIVATE_KEY)
+    owner_address = acct.address
+
+    tx = contract_instance.functions.burn(user_address, int(amount)).buildTransaction(
+        {'nonce': w3.eth.getTransactionCount(owner_address)})
+    # Get tx receipt to get contract address
+    signed_tx = w3.eth.account.signTransaction(tx, CONTRACT_OWNER_PRIVATE_KEY)
+    tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
+    tx_receipt = w3.eth.getTransactionReceipt(tx_hash)
+    event = contract_instance.events.Burn().processReceipt(tx_receipt)
+    print('Transaction Receipt:')
+    print(tx_receipt)
+    print('Event:')
+    print(event)
 
 
-def __balance():
+def __balance(user_address):
     contract_instance, w3 = __setup_contract()
     # Find the address of the person you want the balance of
-    address = "0xb7B7657F1604e2a1469F7419AB1317Ce57EA06C5"
-    print(contract_instance.functions.balances(address).call())
+    print(contract_instance.functions.balances(user_address).call())
 
 def run():
-    if sys.argv[1] == 'earn':
-        __earn()
+    if sys.argv[1] == 'register':
+        __register()
+    elif sys.argv[1] == 'earn':
+        __earn(user_address=sys.argv[2], amount=sys.argv[3])
     elif sys.argv[1] == 'balance':
-        __balance()
+        __balance(user_address=sys.argv[2])
     elif sys.argv[1] == 'burn':
-        __burn()
+        __burn(user_address=sys.argv[2], amount=sys.argv[3])
 
 if __name__ == '__main__':
     run()
