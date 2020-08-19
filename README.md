@@ -54,4 +54,16 @@ I found this article useful - https://levelup.gitconnected.com/dapps-development
 
 ## Deploying
 
-If you want to run ganache on an EC2 instance to test see this article https://medium.com/@rshadmon/how-to-create-a-private-ethereum-blockchain-node-hosted-on-aws-in-5-minutes-for-free-86fc006d3f7a, and this one https://www.allcode.com/ethereum-truffle-pet-shop-dapp/.
+To run ganache on a remote server I used this article https://medium.com/@rshadmon/how-to-create-a-private-ethereum-blockchain-node-hosted-on-aws-in-5-minutes-for-free-86fc006d3f7a. 
+
+Once you have an instance up and running with the correct firewall rules, ssh into it and run the following commands:
+```
+sudo apt-get update
+sudo apt install npm
+sudo npm install -g ganache-cli
+ganache-cli --host <private ip address> --port 8545
+```
+This will then run the ganache client in your server. To deploy your truffle contracts onto the remote blockchian update the `host` of the `test_net` network to be the public ip address of your instance in the `truffle-config.js` file. Then to deploy your contracts run:
+```
+truffle migrate --network test_net
+```

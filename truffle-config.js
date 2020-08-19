@@ -9,11 +9,9 @@ module.exports = {
       port: 8545
     },
     test_net: {
-      host: "",
+      host: "34.121.40.245",
       port: 8545,
-      network_id: "*",
-      from: "0x4d48EA8D7E989f85A8c61DA2b8D8601926BC6c6D",
-      gas:4600000,
+      network_id: "*"
     }
   }
 };
