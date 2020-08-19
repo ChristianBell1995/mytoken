@@ -1,18 +1,19 @@
 import json
 import sys
+import os
 from web3 import Web3, HTTPProvider
 
 CONTRACT_OWNER_PRIVATE_KEY = ""
 
 def __setup_contract():
-    TOKEN_CONTRACT_ADDRESS = ""
+    TOKEN_CONTRACT_ADDRESS = "0x0c52b7e91e2F0844af222088f8A9B6bfCa8dE06d"
     # compile your smart contract with truffle first
     truffleFile = json.load(open('./contracts/Token.json'))
     abi = truffleFile['abi']
     bytecode = truffleFile['bytecode']
 
     # Connect web3 to Ganache
-    w3 = Web3(Web3.HTTPProvider('http://127.0.0.1:7545'))
+    w3 = Web3(Web3.HTTPProvider('http://34.121.40.245:8545'))
     print(f'Are we connected to the blockchain??? {w3.isConnected()}')
     # Get address of your contract i.e. the Token contract
     contract_address = Web3.toChecksumAddress(TOKEN_CONTRACT_ADDRESS)  # modify
