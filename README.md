@@ -18,6 +18,12 @@ To get setup for the python scripts:
     pyenv local mytoken
     pip install web3
 ```
+Before running the scripts you have to find the values on your local blockchain for `CONTRACT_OWNER_PRIVATE_KEY` and `TOKEN_CONTRACT_ADDRESS`. These can be found either by looking in ganache under the 'transactions' tab there should be a row that says 'contract created' - the `TOKEN_CONTRACT_ADDRESS` will be the 'created contract address'. Then to find the owner's private key you need to go back into the accounts tab and find the account that does not have 100.00 ETH - the private key of this will be the `CONTRACT_OWNER_PRIVATE_KEY`. You can also do this programmatically: 
+1. Run `truffle console`
+2. Run `Token.deployed().then(instance => { app = instance})` to get an instance of your deployed contract.
+3. Run `app.owner()` to get the address of the owner of the contract, you can then look in Ganache to find the private key for this address to get the `CONTRACT_OWNER_PRIVATE_KEY`.
+4. Run `app.address` for the `TOKEN_CONTRACT_ADDRESS`.
+
 There are four different ways to call the script.
 For registering a new user:
 ```
