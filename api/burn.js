@@ -20,4 +20,7 @@ contract.methods.burn(receiverAccount, 5).send({
 }).then(receipt => {
   console.log('**********BURN RECEIPT*****************:')
   console.log(receipt)
+  const amount = receipt['events']['Burn']['returnValues']['amount']
+  const user = receipt['events']['Burn']['returnValues']['user']
+  console.log(`User: ${user} burned ${amount} points`)
 })

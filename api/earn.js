@@ -20,4 +20,8 @@ contract.methods.earn(receiverAccount, 5).send({
 }).then(receipt => {
   console.log('**********EARN RECEIPT*****************:')
   console.log(receipt)
+  console.log('**********END RECEIPT*****************')
+  const amount = receipt['events']['Earn']['returnValues']['amount']
+  const user = receipt['events']['Earn']['returnValues']['user']
+  console.log(`User: ${user} earned ${amount} points`)
 })
